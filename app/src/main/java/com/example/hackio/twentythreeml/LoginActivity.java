@@ -45,41 +45,17 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        getData();
-
         // Check if user is logged in
         if (getUser() != null) {
             Intent mainActivityIntent = new Intent(this, MainActivity.class);
             mainActivityIntent.putExtra("data", responseString);
+            Log.i("response", responseString);
             startActivity(mainActivityIntent);
             finish();
             return;
         }
 
         initUIViews();
-    }
-
-    private void getData(){
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://fb5d869f.ngrok.io/getLocs";
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        Log.i("Volley Response", response);
-                        responseString = response;
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
     }
 
     // Call this method to initialize UI views and handle listeners for these views
