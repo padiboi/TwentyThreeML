@@ -11,18 +11,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
 import com.hypertrack.lib.HyperTrack;
 import com.hypertrack.lib.callbacks.HyperTrackCallback;
@@ -33,8 +26,6 @@ import com.hypertrack.lib.models.User;
 import com.hypertrack.lib.models.UserParams;
 
 public class LoginActivity extends AppCompatActivity {
-
-    private String responseString;
 
     private EditText nameText, phoneNumberText;
     private LinearLayout loginBtnLoader;
@@ -48,8 +39,6 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user is logged in
         if (getUser() != null) {
             Intent mainActivityIntent = new Intent(this, MainActivity.class);
-            mainActivityIntent.putExtra("data", responseString);
-            Log.i("response", responseString);
             startActivity(mainActivityIntent);
             finish();
             return;

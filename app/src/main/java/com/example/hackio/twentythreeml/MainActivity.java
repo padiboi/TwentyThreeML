@@ -13,6 +13,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -65,9 +68,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Location mLastLocation;
     ArrayList<LatLng> locs = new ArrayList<>();
     ArrayList<LatLng> marks = new ArrayList<>();
+    ArrayList<String> questions = new ArrayList<>();
+    ArrayList<String> answers = new ArrayList<>();
+    ArrayList<String> clues = new ArrayList<>();
     String responseString;
     private float[] distance_travelled = new float[]{0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     private float[] results = new float[]{0.0f, 0.0f, 0.0f};
+    int qCounter = 0;
+
+    TextView statusTV, questionTV, clueTV;
+    EditText answerET;
+    Button submitBTN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +90,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         getData();
         //responseObject = getIntent().getStringExtra("data");
         Log.i("Gautam", "before locations");
+
+        statusTV = findViewById(R.id.status);
+        questionTV = findViewById(R.id.question);
+        answerET = findViewById(R.id.answer);
+        submitBTN = findViewById(R.id.submit);
+        clueTV = findViewById(R.id.clue);
 
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.trip_map);
@@ -124,6 +141,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Double b = jArray.getJSONObject(i).getDouble("lng");
                 locs.add(new LatLng(a, b));
             }
+            jArray = jsonObject.getJSONArray("places");
+            for(int i=0; i<jArray.length(); i++){
+                Double a = jArray.getJSONObject(i).getJSONArray("coordinates").getDouble(0);
+                Double b = jArray.getJSONObject(i).getJSONArray("coordinates").getDouble(1);
+                String question = jArray.getJSONObject(i).getString("question");
+                String answer = jArray.getJSONObject(i).getString("answer");
+                String clue = jArray.getJSONObject(i).getString("answer");
+                marks.add(new LatLng(a,b));
+                questions.add(i, question);
+                answers.add(i, answer);
+                clues.add(i, clue);
+            }
         } catch (org.json.JSONException e) {
             e.printStackTrace();
         }
@@ -164,8 +193,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Polygon polygon = mGoogleMap.addPolygon(new PolygonOptions()
                 .add(ls)
-                .strokeColor(Color.RED)
-                .fillColor(Color.BLUE));
+                .strokeColor(Color.GREEN)
+                .fillColor(Color.parseColor("#ef9a9a")));
         polygon.setVisible(true);
 
         LatLng l = new LatLng(12.9940273, 77.6612323);
@@ -180,7 +209,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        marker.getId();
+        questionTV.setText(questions.get(qCounter%2));
+        clueTV.setText(clues.get(qCounter%2));
         return true;
     }
 
@@ -203,6 +233,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onError(@NonNull ErrorResponse errorResponse) {
             }
         });
+
+        if(HyperTrack.isTracking()){
+            Log.i("hyper", "True");
+        }else{
+            Log.i("hyper", "false");
+        }
+
     }
 
     private void saveDeliveryAction(Action action) {
